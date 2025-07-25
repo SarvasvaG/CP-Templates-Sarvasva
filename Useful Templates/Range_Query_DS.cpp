@@ -69,11 +69,11 @@ public:
         ll mid = low + (high - low) / 2;
         if (pos <= mid)
         {
-            build(2 * index + 1, low, mid);
+            update(2 * index + 1, low, mid, pos, x);
         }
         else
         {
-            build(2 * index + 2, mid + 1, high);
+            update(2 * index + 2, mid + 1, high, pos, x);
         }
         segment[index] = combine(segment[2 * index + 1], segment[2 * index + 2]);
     }
