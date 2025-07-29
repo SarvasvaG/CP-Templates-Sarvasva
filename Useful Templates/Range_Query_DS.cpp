@@ -5,15 +5,16 @@ using namespace std;
 
 struct Node
 {
-    ll sum;
-    Node() : sum(0) {};
-    Node(ll sum) : sum(sum) {};
-};
+    ll m;
+    Node() : m(INF) {};
+    Node(ll m) : m(m) {};
 
-Node combine(const Node &A, const Node &B)
-{
-    Node C(A.sum + B.sum);
-    return C;
+    Node operator+(const Node &other)
+    {
+        Node res;
+        res.m = min(m, other.m);
+        return res;
+    }
 };
 
 template <typename T>
@@ -40,7 +41,7 @@ public:
         ll mid = low + (high - low) / 2;
         build(2 * index + 1, low, mid);
         build(2 * index + 2, mid + 1, high);
-        segment[index] = combine(segment[2 * index + 1], segment[2 * index + 2]);
+        segment[index] = segment[2 * index + 1] + segment[2 * index + 2];
     }
 
     T query(int index, int low, int high, int l, int r)
@@ -56,7 +57,7 @@ public:
         int mid = low + (high - low) / 2;
         T left = query(2 * index + 1, low, mid, l, r);
         T right = query(2 * index + 2, mid + 1, high, l, r);
-        return combine(left, right);
+        return left + right;
     }
 
     void update(int index, int low, int high, int pos, int x)
@@ -75,7 +76,7 @@ public:
         {
             update(2 * index + 2, mid + 1, high, pos, x);
         }
-        segment[index] = combine(segment[2 * index + 1], segment[2 * index + 2]);
+        segment[index] = segment[2 * index + 1] + segment[2 * index + 2];
     }
 };
 
@@ -91,14 +92,14 @@ public:
         p = floor(log2(n));
 
         log_table.assign(n + 1, 0);
-        fe(i, 2, n + 1, 1)
+        for (int i = 2; i <= n; i++)
             log_table[i] = log_table[i / 2] + 1;
 
         sparse_table.assign(p + 1, vector<ll>(n, 0));
         sparse_table[0] = a;
-        fe(i, 1, p + 1, 1)
+        for (int i = 1; i <= p; i++)
         {
-            fe(j, 0, n, 1)
+            for (int j = 0; j < n; j++)
             {
                 if ((j + (1ll << i)) > n)
                     break;

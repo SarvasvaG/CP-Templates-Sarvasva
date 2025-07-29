@@ -299,7 +299,7 @@ Input: adjacency MATRIX, number of vertices
 Output:
 vvll - dist[i][j], 1e15 if no path.
 bool - true if negative cycle exists */
-pair<vector<vector<ll>>, bool> floydWarshall(vector<vector<ll>> &adj, ll n, unordered_map<ll, ll> &mp)
+pair<vector<vector<ll>>, bool> floydWarshall(vector<vector<ll>> &adj, ll n)
 {
     bool negativeCycle = false;
     vector<vector<ll>> dist(n, vector<ll>(n, 0));
@@ -641,20 +641,23 @@ pair<vvi, ll> minimum_spanning_tree(vvi edges, int n, int m)
     return {mst_edges, mst_weight};
 }
 
-int n, l;
-vvi adj;
-int timer;
-vi tin, tout;
-vvi up;
+ll n, l;
+vector<vector<ll>> adj;
+ll timer;
+vector<ll> tin, tout;
+vector<vector<ll>> up;
 void dfs_binary_lifting(int v, int p = -1)
 {
     tin[v] = ++timer;
     up[v][0] = p;
-    fe(i, 1, l + 1, 1) if (up[v][i - 1] == -1) break;
-    else up[v][i] = up[up[v][i - 1]][i - 1];
+    for (int i = 1; i <= l; i++)
+        if (up[v][i - 1] == -1)
+            break;
+        else
+            up[v][i] = up[up[v][i - 1]][i - 1];
     for (int child : adj[v])
         if (child != p)
-            dfs(child, v);
+            dfs_binary_lifting(child, v);
     tout[v] = ++timer;
 }
 
@@ -676,14 +679,47 @@ int lca(int u, int v)
             u = up[u][i];
     return up[u][0];
 }
+
 void preprocess(int root)
 {
     tin.assign(n, 0);
     tout.assign(n, 0);
     timer = 0;
     l = ceil(log2(n));
-    up.assign(n, vi(l + 1, -1));
+    up.assign(n, vector<ll>(l + 1, -1));
     dfs_binary_lifting(root);
+}
+
+vector<ll> children, d;
+void dfs(ll v, ll dist, ll p = -1)
+{
+    ll child = 1;
+    for (auto c : adj[v])
+    {
+        if (c != p)
+        {
+            dfs(c, dist + 1, v);
+            child += children[c];
+        }
+    }
+    children[v] = child;
+    d[v] = dist;
+}
+
+ll jump(ll u, ll jump)
+{
+    if (jump == 0)
+        return u;
+    ll ans = u;
+    for (int i = l; i >= 0; i--)
+    {
+        if (jump >= (1ll << i))
+        {
+            jump -= (1ll << i);
+            ans = up[ans][i];
+        }
+    }
+    return ans;
 }
 
 /*SUCCESSOR-TABLE FOR FUNCTIONAL GRAPHS*/

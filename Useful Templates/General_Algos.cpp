@@ -2,21 +2,23 @@
 
 /*SUFFIX MEX ARRAY CREATION*/
 /*Time Complexity:O(nlogn)
-Returns: Suffix Mex array. suffix_mex[i]=mex of array a from [i...n-1] 
+Returns: Suffix Mex array. suffix_mex[i]=mex of array a from [i...n-1]
 0-BASED INDEXING*/
-vi construct_suffix_mex(vi &a){
-    int n=sz(a);
-    vi suffix_mex(n);
-    set<int> mex_set={0};
-    set<int> s;
-    int current=1;
-    fer(i,n-1,0,1){
-        if(s.find(current)==s.end())
+vector<ll> construct_suffix_mex(vector<ll> &a)
+{
+    ll n = a.size();
+    vector<ll> suffix_mex(n);
+    set<ll> mex_set = {0};
+    set<ll> s;
+    int current = 1;
+    for (int i = n - 1; i >= 0; i--)
+    {
+        if (s.find(current) == s.end())
             mex_set.insert(current);
         current++;
         mex_set.erase(a[i]);
         s.insert(a[i]);
-        suffix_mex[i]=*mex_set.begin();
+        suffix_mex[i] = *mex_set.begin();
     }
     return suffix_mex;
 }
@@ -25,13 +27,13 @@ vi construct_suffix_mex(vi &a){
 /*Time Complexity:O(nlogn)
 Returns: Prefix Mex array. prefix[i]=mex of array a from [0...i] 
 0-BASED INDEXING*/
-vi construct_prefix_mex(vi &a){
-    int n=sz(a);
-    vi prefix_mex(n);
-    set<int> mex_set={0};
-    set<int> s;
-    int current=1;
-    fe(i,0,n,1){
+vector<ll> construct_prefix_mex(vector<ll> &a){
+    ll n=a.size();
+    vector<ll> prefix_mex(n);
+    set<ll> mex_set={0};
+    set<ll> s;
+    ll current=1;
+    for(int i=0;i<n;i++){
         if(s.find(current)==s.end())
             mex_set.insert(current);
         current++;
