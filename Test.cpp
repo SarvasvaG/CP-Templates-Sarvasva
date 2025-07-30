@@ -27,18 +27,11 @@ using omset = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statisti
     cerr << "Test " << temp - t << ":" << endl; \
     solve();                                    \
     cerr << endl;
-#define tcn "Case #" << testCaseNumber++ << ": "
 #include "debug.h"
 #else
 #define custom_solve(t, temp) solve();
 #define debug(x)
 #endif
-
-constexpr int N = 2e5 + 10;
-constexpr ll MOD1 = 1000000007;
-constexpr ll MOD2 = 998244353;
-constexpr ll INF = 1e18;
-constexpr double eps = 1e-6;
 
 template <typename T>
 istream &operator>>(istream &in, vector<T> &v)
@@ -56,18 +49,39 @@ ostream &operator<<(ostream &out, vector<T> &v)
     return out;
 }
 
-vector<ll> fact;
-ld binPow(ld a, ll b);
-ll binPow(ll a, ll b);
-void factorials();
-void printD(ld a, int prec, bool bankerRound = false); // Prints rounded a to prec decimal places.
-ll ncr(ll n, ll r);
-ll add(ll a, ll b) { return (a + b) % MOD1; }
-ll sub(ll a, ll b) { return (a - b + MOD1) % MOD1; }
-ll mul(ll a, ll b) { return (a * 1LL * b) % MOD1; }
-ll inv(ll a) { return binPow(a, MOD1 - 2) % MOD1; }
-ll divi(ll a, ll b) { return (a * 1LL * inv(b)) % MOD1; }
-ll testCaseNumber = 1;
+namespace Constants
+{
+    constexpr ll N = 2e6 + 10;
+    constexpr ll MOD1 = 1000000007;
+    constexpr ll MOD2 = 998244353;
+    constexpr ll MOD3 = ll(1e18) + 3;
+    constexpr ll MOD4 = ll(1e15) + 37;
+    constexpr ll INF = 1e18;
+    constexpr double eps = 1e-6;
+};
+
+namespace Math
+{
+    vector<ll> factorials;
+    void computeFactorials();
+
+    ll ncr(ll n, ll r);
+
+    void printD(ld a, int prec, bool bankerRound = false); // Prints rounded a to prec decimal places.
+};
+using namespace Math;
+
+namespace Mod32
+{
+    constexpr ll mod = Constants::MOD1;
+    ll binPow(ll a, ll b, ll mod = mod);
+    inline ll add(ll a, ll b, ll mod = mod) { return (a + b) % mod; }
+    inline ll sub(ll a, ll b, ll mod = mod) { return (a - b + mod) % mod; }
+    inline ll mul(ll a, ll b, ll mod = mod) { return (a * b) % mod; }
+    inline ll inv(ll a, ll mod = mod) { return binPow(a, mod - 2, mod) % mod; }
+    inline ll divi(ll a, ll b, ll mod = mod) { return (a * 1LL * inv(b, mod)) % mod; }
+};
+using namespace Mod32;
 
 void solve()
 {
@@ -95,61 +109,58 @@ int main()
     return 0;
 }
 
-ld binPow(ld a, ll b)
+namespace Math
 {
-    ld ans = 1;
-    while (b)
+    void computeFactorials()
     {
-        if (b & 1)
-            ans = ans * a;
-        a = a * a;
-        b >>= 1;
+        factorials.assign(Constants::N + 1, 0);
+        factorials[0] = factorials[1] = 1;
+        for (int i = 2; i <= Constants::N; i++)
+        {
+            factorials[i] = mul(i, factorials[i - 1]);
+        }
     }
-    return ans;
-}
 
-ll binPow(ll a, ll b)
-{
-    ld ans = 1;
-    while (b)
+    ll ncr(ll n, ll r)
     {
-        if (b & 1)
-            ans = mul(ans, a);
-        a = mul(a, a);
-        b >>= 1;
+        ll nr = factorials[n];
+        ll dr = mul(factorials[n - r], factorials[r]);
+        return divi(nr, dr);
     }
-    return ans;
-}
 
-void factorials()
-{
-    fact.assign(N + 1, 0);
-    fact[0] = fact[1] = 1;
-    for (int i = 2; i <= N; i++)
-        fact[i] = mul(i, fact[i - 1]);
-}
-
-ll ncr(ll n, ll r)
-{
-    ll nr = fact[n];
-    ll dr = mul(fact[n - r], fact[r]);
-    return divi(nr, dr);
-}
-
-void printD(ld a, int prec, bool bankerRound)
-{
-    cout << fixed << setprecision(prec);
-    ld num = pow(10, prec);
-    if (bankerRound)
+    void printD(ld a, int prec, bool bankerRound)
     {
-        ld temp = floor(a * num);
-        if ((ll)temp % 2 == 0 && a * num - temp == 0.5)
-            cout << temp / num << endl;
+        cout << fixed << setprecision(prec);
+        ld num = pow(10, prec);
+        if (bankerRound)
+        {
+            ld temp = floor(a * num);
+            if ((ll)temp % 2 == 0 && a * num - temp == 0.5)
+                cout << temp / num << endl;
+            else
+                cout << round(a * num) / num << endl;
+        }
         else
+        {
             cout << round(a * num) / num << endl;
+        }
     }
-    else
+};
+
+namespace Mod32
+{
+    ll binPow(ll a, ll b, ll mod)
     {
-        cout << round(a * num) / num << endl;
+        ll result = 1;
+        while (b)
+        {
+            if (b & 1)
+            {
+                result = mul(result, a, mod);
+            }
+            a = mul(a, a, mod);
+            b >>= 1;
+        }
+        return result;
     }
-}
+};

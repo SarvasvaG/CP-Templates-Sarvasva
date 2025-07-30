@@ -63,19 +63,42 @@ vector<int> zFunction(string s)
     return z;
 }
 
-/*ROLLING HASH FUNCTION*/
-/*Hash values are equal => Strings are equal*/
-vector<ll> rollingHash;
-void createRollingHash(string &s)
+/*Computing Effective Hash: Double Hash for String*/
+class Hash
 {
-    ll len = s.size();
-    rollingHash.assign(len + 1, 0ll);
-    for (int i = 1; i <= len; i++)
-        rollingHash[i] = add(rollingHash[i - 1], mul(s[i - 1] - 'a' + 1, binPow(27, i - 1)));
-}
+    const ll base = 31;
+    vector<ll> rollingHash1;
+    vector<ll> rollingHash2;
 
-/*Returns Hash value for the string s[l...r] (0-BASED INDEXING)*/
-ll hashVal(ll l, ll r)
-{
-    return divi(sub(rollingHash[r + 1], rollingHash[l]), binPow(27, l));
-}
+public:
+    Hash() = default;
+    Hash(const string &s)
+    {
+        ll power1 = 1, power2 = 1;
+        rollingHash1.clear();
+        rollingHash2.clear();
+        rollingHash1.push_back(0ll);
+        rollingHash2.push_back(0ll);
+        for (auto c : s)
+        {
+            rollingHash1.push_back(add(rollingHash1.back(), mul(c - 'a' + 1, power1)));
+            rollingHash2.push_back(add(rollingHash2.back(), mul(c - 'a' + 1, power2, Constants::MOD2), Constants::MOD2));
+            power1 = mul(power1, base);
+            power2 = mul(power2, base, Constants::MOD2);
+        }
+    }
+
+    pair<ll, ll> rangeHashValue(ll l, ll r)
+    {
+        ll firstHash = divi(sub(rollingHash1[r + 1], rollingHash1[l]), binPow(base, l));
+        ll secondHash = divi(sub(rollingHash2[r + 1], rollingHash2[l], Constants::MOD2), binPow(base, l, Constants::MOD2), Constants::MOD2);
+        return make_pair(firstHash, secondHash);
+    }
+
+    pair<ll, ll> getHash() const
+    {
+        ll firstHash = rollingHash1.back();
+        ll secondHash = rollingHash2.back();
+        return make_pair(firstHash, secondHash);
+    }
+};
