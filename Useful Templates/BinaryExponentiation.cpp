@@ -118,14 +118,14 @@ ll binPowB(ll a, ll b, ll m)
     return ans;
 }
 
-vector<vector<ll>> matAdd(vector<vector<ll>> a, vector<vector<ll>> b)
+vector<vector<ll>> matAdd(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
 {
     /*Matrix Addition (MODULO M1=10^9+7)
     Input: matrix a-(n1xm1) and b-(n2xm2)
     Returns: a+b-(n1xm1)
     NOTE: If m1!=n1||n2!=m2, (0x0) matrix is returned
     Time Complexity: O(n1*m1)*/
-    ll n1 = sz(a), n2 = sz(b), m1 = sz(a[0]), m2 = sz(b[0]);
+    ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
     if (n1 != m1 || n2 != m2)
         return {{}};
     vector<vector<ll>> c(n1, vector<ll>(m1, 0));
@@ -139,7 +139,7 @@ vector<vector<ll>> matAdd(vector<vector<ll>> a, vector<vector<ll>> b)
     return c;
 }
 
-vector<vector<ll>> matSub(vector<vector<ll>> a, vector<vector<ll>> b)
+vector<vector<ll>> matSub(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
 {
     /*Matrix Addition (MODULO M1=10^9+7)
     Input: matrix a-(n1xm1) and b-(n2xm2)
@@ -165,7 +165,7 @@ vector<vector<ll>> matSub(vector<vector<ll>> a, vector<vector<ll>> b)
     return c;
 }
 
-vector<vector<ll>> matMul(vector<vector<ll>> a, vector<vector<ll>> b)
+vector<vector<ll>> matMul(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
 {
     /*Matrix Multiplication (MODULO M1=10^9+7)
     Input: matrix a-(n1xm1) and b-(n2xm2)

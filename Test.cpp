@@ -68,6 +68,14 @@ namespace Math
     ll ncr(ll n, ll r);
 
     void printD(ld a, int prec, bool bankerRound = false); // Prints rounded a to prec decimal places.
+
+    namespace Matrix
+    {
+        vector<vector<ll>> matAdd(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matSub(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matMul(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matPow(vector<vector<ll>> a, ll k);
+    };
 };
 using namespace Math;
 
@@ -145,6 +153,82 @@ namespace Math
             cout << round(a * num) / num << endl;
         }
     }
+
+    namespace Matrix
+    {
+        vector<vector<ll>> matAdd(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n1 != m1 || n2 != m2)
+                return {{}};
+            vector<vector<ll>> c(n1, vector<ll>(m1, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m1; j++)
+                {
+                    c[i][j] = add(a[i][j], b[i][j]);
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matSub(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n1 != m1 || n2 != m2)
+            {
+                return {{}};
+            }
+            vector<vector<ll>> c(n1, vector<ll>(m1, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m1; j++)
+                {
+                    c[i][j] = sub(a[i][j], b[i][j]);
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matMul(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n2 != m1)
+            {
+                return {{}};
+            }
+            vector<vector<ll>> c(n1, vector<ll>(m2, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m2; j++)
+                {
+                    for (ll k = 0; k < n2; k++)
+                    {
+                        c[i][j] = add(c[i][j], mul(a[i][k], b[k][j]));
+                    }
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matPow(vector<vector<ll>> a, ll k)
+        {
+            ll n = a.size();
+            vector<vector<ll>> ans(n, vector<ll>(n, 0));
+            for (ll i = 0; i < n; i++)
+                ans[i][i] = 1;
+            while (k)
+            {
+                if (k & 1)
+                {
+                    ans = matMul(ans, a);
+                }
+                a = matMul(a, a);
+                k >>= 1;
+            }
+            return ans;
+        }
+    };
 };
 
 namespace Mod32
