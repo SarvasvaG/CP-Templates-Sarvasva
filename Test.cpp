@@ -52,6 +52,7 @@ ostream &operator<<(ostream &out, vector<T> &v)
 namespace Constants
 {
     constexpr ll N = 2e6 + 10;
+    constexpr ll N2 = 5005;
     constexpr ll MOD1 = 1000000007;
     constexpr ll MOD2 = 998244353;
     constexpr ll MOD3 = ll(1e18) + 3;
@@ -63,7 +64,10 @@ namespace Constants
 namespace Math
 {
     vector<ll> factorials;
-    void computeFactorials();
+    void computeFactorials(ll n = Constants::N);
+
+    vector<vector<ll>> g;
+    void precomputeGCD(ll n = Constants::N2);
 
     ll ncr(ll n, ll r);
 
@@ -97,6 +101,39 @@ void solve()
     cin >> n;
     vector<ll> a(n);
     cin >> a;
+    ll gd = 0;
+    for (auto x : a)
+        gd = g[x][gd];
+    ll cnt = 0;
+    for (auto &x : a)
+    {
+        x /= gd;
+        if (x == 1)
+            cnt++;
+    }
+    if (cnt >= 1)
+    {
+        cout << n - cnt << endl;
+        return;
+    }
+
+    ll s = *max_element(all(a));
+    ll inf = Constants::INF;
+    vector<ll> dp(s + 1, inf);
+    dp[1] = 0;
+    for (int i = 2; i <= s; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            dp[i] = min(dp[i], 1 + dp[g[i][a[j]]]);
+        }
+    }
+    debug(a);
+    debug(dp);
+    ll mini = inf;
+    for (auto x : a)
+        mini = min(mini, dp[x]);
+    cout << mini + n - 1 << endl;
 }
 
 int main()
@@ -109,6 +146,7 @@ int main()
     SpeedIsNeeded;
     int t = 1;
     cin >> t;
+    precomputeGCD();
     int temp = t;
     while (t--)
     {
@@ -119,13 +157,30 @@ int main()
 
 namespace Math
 {
-    void computeFactorials()
+    void computeFactorials(ll n)
     {
-        factorials.assign(Constants::N + 1, 0);
+        factorials.assign(n + 1, 0);
         factorials[0] = factorials[1] = 1;
-        for (int i = 2; i <= Constants::N; i++)
+        for (int i = 2; i <= n; i++)
         {
             factorials[i] = mul(i, factorials[i - 1]);
+        }
+    }
+
+    void precomputeGCD(ll n)
+    {
+        g.assign(n + 1, vector<ll>(n + 1, 0));
+        for (int i = 1; i <= n; i++)
+        {
+            g[0][i] = g[i][0] = i;
+        }
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= i; j++)
+            {
+                g[i][j] = g[j][i % j];
+                g[j][i] = g[i][j];
+            }
         }
     }
 
