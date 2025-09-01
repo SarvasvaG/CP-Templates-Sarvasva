@@ -101,39 +101,6 @@ void solve()
     cin >> n;
     vector<ll> a(n);
     cin >> a;
-    ll gd = 0;
-    for (auto x : a)
-        gd = g[x][gd];
-    ll cnt = 0;
-    for (auto &x : a)
-    {
-        x /= gd;
-        if (x == 1)
-            cnt++;
-    }
-    if (cnt >= 1)
-    {
-        cout << n - cnt << endl;
-        return;
-    }
-
-    ll s = *max_element(all(a));
-    ll inf = Constants::INF;
-    vector<ll> dp(s + 1, inf);
-    dp[1] = 0;
-    for (int i = 2; i <= s; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            dp[i] = min(dp[i], 1 + dp[g[i][a[j]]]);
-        }
-    }
-    debug(a);
-    debug(dp);
-    ll mini = inf;
-    for (auto x : a)
-        mini = min(mini, dp[x]);
-    cout << mini + n - 1 << endl;
 }
 
 int main()
