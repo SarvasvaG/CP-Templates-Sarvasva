@@ -113,7 +113,6 @@ int main()
     SpeedIsNeeded;
     int t = 1;
     cin >> t;
-    precomputeGCD();
     int temp = t;
     while (t--)
     {
