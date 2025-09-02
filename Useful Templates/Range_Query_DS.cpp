@@ -131,12 +131,91 @@ public:
     }
 };
 
+struct LNode
+{
+    ll m, s;
+    LNode() : s(0), m(-Constants::INF) {};
+    LNode(ll m) : s(m), m(m) {};
+
+    LNode operator+(const LNode &other)
+    {
+        LNode res;
+        res.m = max(m, other.m);
+        res.s = s + other.s;
+        return res;
+    }
+};
+
+template <typename T>
 class SGTreeLazy
 {
 public:
-    vector<ll> seg, a, lazy;
+    vector<T> seg;
+    vector<ll> a, lazy;
     ll n;
-    vector<bool> reset;
+    vector<bool> cLazy;
+
+    void build(ll ind, ll low, ll high)
+    {
+        if (low == high)
+        {
+            seg[ind] = T(a[low]);
+            return;
+        }
+        ll mid = low + (high - low) / 2;
+        build(2 * ind + 1, low, mid);
+        build(2 * ind + 2, mid + 1, high);
+        seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2];
+    }
+
+    void lazyHelper(ll ind, ll low, ll high)
+    {
+        seg[ind].s += (high - low + 1) * lazy[ind];
+        seg[ind].m += lazy[ind];
+        if (low != high)
+        {
+            ll mid = low + (high - low) / 2;
+            cLazy[2 * ind + 1] = cLazy[2 * ind + 2] = 1;
+            lazy[2 * ind + 1] += lazy[ind];
+            lazy[2 * ind + 2] += lazy[ind];
+        }
+        lazy[ind] = 0;
+        cLazy[ind] = 0;
+    }
+
+    T queryUtil(ll ind, ll low, ll high, ll l, ll r)
+    {
+        if (cLazy[ind])
+            lazyHelper(ind, low, high);
+        if (high < l || r < low)
+            return T();
+        if (low >= l && high <= r)
+            return seg[ind];
+
+        ll mid = low + (high - low) / 2;
+        auto left = queryUtil(2 * ind + 1, low, mid, l, r);
+        auto right = queryUtil(2 * ind + 2, mid + 1, high, l, r);
+        return left + right;
+    }
+
+    void updateUtil(ll ind, ll low, ll high, ll l, ll r, ll val)
+    {
+        if (cLazy[ind])
+            lazyHelper(ind, low, high);
+        if (high < l || low > r)
+            return;
+        if (l <= low && high <= r)
+        {
+            cLazy[ind] = 1;
+            lazy[ind] = val;
+            lazyHelper(ind, low, high);
+            return;
+        }
+        ll mid = low + (high - low) / 2;
+        updateUtil(2 * ind + 1, low, mid, l, r, val);
+        updateUtil(2 * ind + 2, mid + 1, high, l, r, val);
+        seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2];
+    }
 
 public:
     SGTreeLazy(vector<ll> &a, ll n)
@@ -145,117 +224,28 @@ public:
         this->n = n;
         seg.assign(4 * n, 0);
         lazy.assign(4 * n, 0);
-        reset.assign(4 * n, 0);
-    }
-    void build(ll ind, ll low, ll high)
-    {
-        if (low == high)
-        {
-            seg[ind] = a[low];
-            return;
-        }
-        ll mid = low + (high - low) / 2;
-        build(2 * ind + 1, low, mid);
-        build(2 * ind + 2, mid + 1, high);
-        seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2];
-    }
-    void lazy_helper(ll ind, ll low, ll high)
-    {
-        seg[ind] += (high - low + 1) * lazy[ind];
-        if (low != high)
-        {
-            ll mid = low + (high - low) / 2;
-            lazy[2 * ind + 1] += lazy[ind];
-            lazy[2 * ind + 2] += lazy[ind];
-        }
-        lazy[ind] = 0;
-    }
-    ll query(ll ind, ll low, ll high, ll l, ll r)
-    {
-        if (lazy[ind] != 0)
-            lazy_helper(ind, low, high);
-        if (high < l || r < low)
-            return 0;
-        if (low >= l && high <= r)
-            return seg[ind];
-
-        ll mid = low + (high - low) / 2;
-        ll left = query(2 * ind + 1, low, mid, l, r);
-        ll right = query(2 * ind + 2, mid + 1, high, l, r);
-        return left + right;
-    }
-    void update(ll ind, ll low, ll high, ll l, ll r, ll val)
-    {
-        if (lazy[ind] != 0)
-            lazy_helper(ind, low, high);
-        if (high < l || low > r)
-            return;
-        if (l <= low && high <= r)
-        {
-            seg[ind] += (high - low + 1) * val;
-            if (low != high)
-            {
-                ll mid = low + (high - low) / 2;
-                lazy[2 * ind + 1] += val;
-                lazy[2 * ind + 2] += val;
-            }
-            return;
-        }
-        ll mid = low + (high - low) / 2;
-        update(2 * ind + 1, low, mid, l, r, val);
-        update(2 * ind + 2, mid + 1, high, l, r, val);
-        seg[ind] = seg[2 * ind + 1] + seg[2 * ind + 2];
-    }
-};
-
-class SparseTable
-{
-public:
-    ll n, p;
-    vector<ll> log_table;
-    vector<vector<ll>> sparse_table;
-    SparseTable(vector<ll> &a, ll n)
-    {
-        this->n = n;
-        p = floor(log2(n));
-
-        log_table.assign(n + 1, 0);
-        fe(i, 2, n + 1, 1)
-            log_table[i] = log_table[i / 2] + 1;
-
-        sparse_table.assign(p + 1, vector<ll>(n, 0));
-        sparse_table[0] = a;
-        fe(i, 1, p + 1, 1)
-        {
-            fe(j, 0, n, 1)
-            {
-                if ((j + (1ll << i)) > n)
-                    break;
-                ll first_half = sparse_table[i - 1][j];
-                ll second_half = sparse_table[i - 1][j + (1ll << (i - 1))];
-                sparse_table[i][j] = min(first_half, second_half);
-            }
-        }
+        cLazy.assign(4 * n, 0);
+        build(0, 0, n - 1);
     }
 
-    ll query_overalapping(ll l, ll r)
+    T query(ll l, ll r)
     {
-        ll width = r - l + 1;
-        ll k = log_table[width];
-        ll left_ans = sparse_table[k][l];
-        ll right_ans = sparse_table[k][r - (1ll << k) + 1];
-        return min(left_ans, right_ans);
+        return queryUtil(0, 0, n - 1, l, r);
     }
 
-    ll query_non_overlapping(ll l, ll r)
+    T pQuery(ll pos)
     {
-        ll min_value = INF;
-        for (int i = log_table[r - l + 1]; l <= r; i = log_table[r - l + 1])
-        {
-            min_value = min(min_value, sparse_table[i][l]);
-            l += (1ll << i);
-        }
-        return min_value;
+        return queryUtil(0, 0, n - 1, pos, pos);
+    }
+
+    void update(ll l, ll r, ll val)
+    {
+        updateUtil(0, 0, n - 1, l, r, val);
+    }
+
+    void pUpdate(ll pos, ll val)
+    {
+        updateUtil(0, 0, n - 1, pos, pos, val);
     }
 };
 
