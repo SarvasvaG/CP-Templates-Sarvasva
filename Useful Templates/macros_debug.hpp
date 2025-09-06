@@ -147,22 +147,36 @@ void _print(map<T, V> v)
 namespace Constants
 {
     constexpr ll N = 2e6 + 10;
+    constexpr ll N2 = 5005;
     constexpr ll MOD1 = 1000000007;
     constexpr ll MOD2 = 998244353;
     constexpr ll MOD3 = ll(1e18) + 3;
     constexpr ll MOD4 = ll(1e15) + 37;
     constexpr ll INF = 1e18;
     constexpr double eps = 1e-6;
+    constexpr ll MAXBITS = 20;
+    constexpr ll MAXN = (1ll << MAXBITS);
 };
 
 namespace Math
 {
     vector<ll> factorials;
-    void computeFactorials();
+    void computeFactorials(ll n = Constants::N);
+
+    vector<vector<ll>> g;
+    void precomputeGCD(ll n = Constants::N2);
 
     ll ncr(ll n, ll r);
 
     void printD(ld a, int prec, bool bankerRound = false); // Prints rounded a to prec decimal places.
+
+    namespace Matrix
+    {
+        vector<vector<ll>> matAdd(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matSub(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matMul(const vector<vector<ll>> &a, const vector<vector<ll>> &b);
+        vector<vector<ll>> matPow(vector<vector<ll>> a, ll k);
+    };
 };
 using namespace Math;
 
@@ -180,13 +194,30 @@ using namespace Mod32;
 
 namespace Math
 {
-    void computeFactorials()
+    void computeFactorials(ll n)
     {
-        factorials.assign(Constants::N + 1, 0);
+        factorials.assign(n + 1, 0);
         factorials[0] = factorials[1] = 1;
-        for (int i = 2; i <= Constants::N; i++)
+        for (int i = 2; i <= n; i++)
         {
             factorials[i] = mul(i, factorials[i - 1]);
+        }
+    }
+
+    void precomputeGCD(ll n)
+    {
+        g.assign(n + 1, vector<ll>(n + 1, 0));
+        for (int i = 1; i <= n; i++)
+        {
+            g[0][i] = g[i][0] = i;
+        }
+        for (int i = 1; i <= n; i++)
+        {
+            for (int j = 1; j <= i; j++)
+            {
+                g[i][j] = g[j][i % j];
+                g[j][i] = g[i][j];
+            }
         }
     }
 
@@ -214,6 +245,82 @@ namespace Math
             cout << round(a * num) / num << endl;
         }
     }
+
+    namespace Matrix
+    {
+        vector<vector<ll>> matAdd(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n1 != m1 || n2 != m2)
+                return {{}};
+            vector<vector<ll>> c(n1, vector<ll>(m1, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m1; j++)
+                {
+                    c[i][j] = add(a[i][j], b[i][j]);
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matSub(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n1 != m1 || n2 != m2)
+            {
+                return {{}};
+            }
+            vector<vector<ll>> c(n1, vector<ll>(m1, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m1; j++)
+                {
+                    c[i][j] = sub(a[i][j], b[i][j]);
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matMul(const vector<vector<ll>> &a, const vector<vector<ll>> &b)
+        {
+            ll n1 = a.size(), n2 = b.size(), m1 = a[0].size(), m2 = b[0].size();
+            if (n2 != m1)
+            {
+                return {{}};
+            }
+            vector<vector<ll>> c(n1, vector<ll>(m2, 0));
+            for (ll i = 0; i < n1; i++)
+            {
+                for (ll j = 0; j < m2; j++)
+                {
+                    for (ll k = 0; k < n2; k++)
+                    {
+                        c[i][j] = add(c[i][j], mul(a[i][k], b[k][j]));
+                    }
+                }
+            }
+            return c;
+        }
+
+        vector<vector<ll>> matPow(vector<vector<ll>> a, ll k)
+        {
+            ll n = a.size();
+            vector<vector<ll>> ans(n, vector<ll>(n, 0));
+            for (ll i = 0; i < n; i++)
+                ans[i][i] = 1;
+            while (k)
+            {
+                if (k & 1)
+                {
+                    ans = matMul(ans, a);
+                }
+                a = matMul(a, a);
+                k >>= 1;
+            }
+            return ans;
+        }
+    };
 };
 
 namespace Mod32

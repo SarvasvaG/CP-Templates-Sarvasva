@@ -219,3 +219,63 @@ struct ConvexHullDynamic
         return bestLine->valueAt(x);
     }
 };
+
+/*
+SOS DP
+F[mask]=Sum of Array Elements with index i such that i is SUBSET of mask (Assuming initially, F[mask]=A[mask])
+Time Complexity: O(MAXBITS.2^MAXBITS)
+*/
+void forwardProp1(vector<ll> &F, ll MAXBITS = Constants::MAXBITS, ll MAXN = Constants::MAXN){
+    for(int i=0;i<=MAXBITS;i++){
+        for(int mask=0;mask<MAXN;mask++){
+            if(mask&(1ll<<i)){
+                F[mask]+=F[mask^(1ll<<i)];
+            }
+        }
+    }
+}
+
+/*
+SOS DP
+Revert the previous process
+Time Complexity: O(MAXBITS.2^MAXBITS)
+*/
+void backwardProp1(vector<ll> &F, ll MAXBITS = Constants::MAXBITS, ll MAXN = Constants::MAXN){
+    for(int i=0;i<=MAXBITS;i++){
+        for(int mask=MAXN-1;mask>=0;mask--){
+            if(mask&(1ll<<i)){
+                F[mask]-=F[mask^(1ll<<i)];
+            }
+        }
+    }
+}
+
+/*
+SOS DP
+F[mask]=Sum of Array Elements with index i such that i is SUPERSET of mask (Assuming initially, F[mask]=A[mask])
+Time Complexity: O(MAXBITS.2^MAXBITS)
+*/
+void forwardProp2(vector<ll> &F, ll MAXBITS = Constants::MAXBITS, ll MAXN = Constants::MAXN){
+    for(int i=0;i<=MAXBITS;i++){
+        for(int mask=MAXN-1;mask>=0;mask--){
+            if(mask&(1ll<<i)){
+                F[mask^(1ll<<i)]+=F[mask];
+            }
+        }
+    }
+}
+
+/*
+SOS DP
+Revert the Previous Process
+Time Complexity: O(MAXBITS.2^MAXBITS)
+*/
+void backwardProp2(vector<ll> &F, ll MAXBITS = Constants::MAXBITS, ll MAXN = Constants::MAXN){
+    for(int i=0;i<=MAXBITS;i++){
+        for(int mask=0;mask<MAXN;mask++){
+            if(mask&(1ll<<i)){
+                F[mask^(1ll<<i)]-=F[mask];
+            }
+        }
+    }
+}

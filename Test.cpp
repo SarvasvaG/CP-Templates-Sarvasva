@@ -59,6 +59,8 @@ namespace Constants
     constexpr ll MOD4 = ll(1e15) + 37;
     constexpr ll INF = 1e18;
     constexpr double eps = 1e-6;
+    constexpr ll MAXBITS = 20;
+    constexpr ll MAXN = (1ll << MAXBITS);
 };
 
 namespace Math
