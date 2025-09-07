@@ -222,7 +222,7 @@ public:
     {
         this->a = a;
         this->n = n;
-        seg.assign(4 * n, 0);
+        seg.assign(4 * n, T());
         lazy.assign(4 * n, 0);
         cLazy.assign(4 * n, 0);
         build(0, 0, n - 1);
