@@ -690,6 +690,107 @@ void preprocess(int root)
     dfs_binary_lifting(root);
 }
 
+/*FINDING LCA IN O(1)*/
+/*********************************************************************/
+const ll sz = 200005;
+vector<ll> adj[sz];
+vector<ll> euler;
+vector<ll> depthArr;
+ll FAI[sz];
+ll level[sz];
+ll ptr;
+ll dp[sz][20];
+ll logn[sz];
+ll p2[20];
+
+void buildSparseTable(ll n)
+{
+    memset(dp, -1, sizeof(dp));
+    for (int i = 1; i < n; i++)
+        dp[i - 1][0] = (depthArr[i] > depthArr[i - 1]) ? i - 1 : i;
+    for (int l = 1; l < 20; l++)
+        for (int i = 0; i < n; i++)
+            if (dp[i][l - 1] != -1 and dp[i + p2[l - 1]][l - 1] != -1)
+                dp[i][l] =
+                    (depthArr[dp[i][l - 1]] > depthArr[dp[i + p2[l - 1]][l - 1]]) ? dp[i + p2[l - 1]][l - 1] : dp[i][l - 1];
+            else
+                break;
+}
+
+ll query(ll l, ll r)
+{
+    ll d = r - l;
+    ll dx = logn[d];
+    if (l == r)
+        return l;
+    if (depthArr[dp[l][dx]] > depthArr[dp[r - p2[dx]][dx]])
+        return dp[r - p2[dx]][dx];
+    else
+        return dp[l][dx];
+}
+
+void preprocess()
+{
+    p2[0] = 1;
+    for (int i = 1; i < 20; i++)
+        p2[i] = p2[i - 1] * 2;
+    int val = 1, ptr = 0;
+    for (int i = 1; i < sz; i++)
+    {
+        logn[i] = ptr - 1;
+        if (val == i)
+        {
+            val *= 2;
+            logn[i] = ptr;
+            ptr++;
+        }
+    }
+}
+
+void dfs(ll cur, ll prev, ll dep)
+{
+    if (FAI[cur] == -1)
+        FAI[cur] = ptr;
+    level[cur] = dep;
+    euler.push_back(cur);
+    ptr++;
+    for (auto x : adj[cur])
+    {
+        if (x != prev)
+        {
+            dfs(x, cur, dep + 1);
+            euler.push_back(cur);
+            ptr++;
+        }
+    }
+}
+
+void makeArr()
+{
+    for (auto x : euler)
+        depthArr.push_back(level[x]);
+}
+
+ll LCA(ll u, ll v)
+{
+    if (u == v)
+        return u;
+    if (FAI[u] > FAI[v])
+        swap(u, v);
+    return euler[query(FAI[u], FAI[v])];
+}
+
+void preprocessLCA()
+{
+    preprocess();
+    ptr = 0;
+    memset(FAI, -1, sizeof(FAI));
+    dfs(1, 0, 0);
+    makeArr();
+    buildSparseTable(depthArr.size());
+}
+/*********************************************************************/
+
 vector<ll> children, d;
 void dfs(ll v, ll dist, ll p = -1)
 {

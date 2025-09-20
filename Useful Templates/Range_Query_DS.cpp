@@ -269,38 +269,30 @@ struct Query
 /*Time Complexity for processing Q queries: O((N+Q)sqrt(N))*/
 /*0-BASED INDEXING IS USED FOR l,r,idx*/
 /*The interval [curr_l, curr_r] is the current interval (both the end points included)*/
-
-void moAlgorithm(vector<int> &a, vector<Query> &queries)
+void moAlgorithm(vector<ll> &a, vector<Query> &queries)
 {
-    int n = a.size();
-    int q = queries.size();
-    int MAXI = 2e5 + 5;
+    ll n = a.size();
+    ll q = queries.size();
+    ll MAXI = 2e5 + 5;
     rootn = ceil(sqrt(n + 0.1));
 
     /*Sort the Queries by Blocks*/
     sort(all(queries));
 
-    unordered_map<int, int> freq;
-    vector<int> answer(q);
-    set<pair<int, int>> st;
+    ll currCount = 0;
+    vector<ll> freq(2 * (*max_element(all(a))) + 2, 0ll);
+
+    vector<ll> answer(q);
     ll curr_l = 0, curr_r = -1, curr_ans = 0, l, r; // Do not change this
 
     auto insert = [&](ll x)
     {
         freq[x]++;
-        if (freq[x] != 1)
-            st.erase({freq[x] - 1, x});
-        st.insert({freq[x], x});
     };
 
     auto remove = [&](ll x)
     {
         freq[x]--;
-        st.erase({freq[x] + 1, x});
-        if (freq[x] != 0)
-            st.insert({freq[x], x});
-        if (!freq[x])
-            freq.erase(x);
     };
 
     for (int i = 0; i < q; i++)
@@ -329,10 +321,7 @@ void moAlgorithm(vector<int> &a, vector<Query> &queries)
             remove(a[curr_r]);
             curr_r--;
         }
-
-        debug(st);
-        debug(queries[i].idx);
-        answer[queries[i].idx] = (r - l + 1) - (st.rbegin()->first);
+        answer[queries[i].idx] = currCount;
     }
     for (auto &ans : answer)
         cout << ans << endl;
