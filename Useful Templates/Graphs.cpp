@@ -1058,3 +1058,19 @@ vvi edge_disjoint_paths(int source, int destination)
     dfs_edp(source, source, destination, source_to_destination_edp, vis_edge);
     return source_to_destination_edp;
 }
+
+vector<set<ll>> adj;
+vector<ll> eulerPath;
+/*Returns revese euler path starting from node*/
+/*If graph has euler cycle, then it returns euler cycle*/
+void findEulerPath(ll node)
+{
+    while (!adj[node].empty())
+    {
+        ll child = *adj[node].begin();
+        adj[child].erase(node);
+        adj[node].erase(child);
+        findEulerPath(child);
+    }
+    eulerPath.push_back(node);
+}
