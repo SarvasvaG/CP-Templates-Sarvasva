@@ -1061,16 +1061,25 @@ vvi edge_disjoint_paths(int source, int destination)
 
 vector<set<ll>> adj;
 vector<ll> eulerPath;
-/*Returns revese euler path starting from node*/
-/*If graph has euler cycle, then it returns euler cycle*/
-void findEulerPath(ll node)
+/*Retuns reverse Euler Path/Cycle starting from node in an UNDIRECTED GRAPH*/
+void findEulerPathUndirected(ll node)
 {
     while (!adj[node].empty())
     {
         ll child = *adj[node].begin();
         adj[child].erase(node);
         adj[node].erase(child);
-        findEulerPath(child);
+        findEulerPathUndirected(child);
+    }
+    eulerPath.push_back(node);
+}
+
+/*Retuns reverse Euler Path/Cycle starting from node in a DIRECTED GRAPH*/
+void findEulerPathDirected(ll node){
+    while(!adj[node].empty()){
+        ll child=*adj[node].begin();
+        adj[node].erase(child);
+        findEulerPathDirected(child);
     }
     eulerPath.push_back(node);
 }
