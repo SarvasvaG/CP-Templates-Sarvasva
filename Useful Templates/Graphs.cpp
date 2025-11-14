@@ -219,6 +219,33 @@ pair<vector<ll>, vector<ll>> dijkstra(vector<vector<pair<ll, ll>>> &adj, ll n, l
     return {dist, p};
 }
 
+/* ANOTHER IMPLEMENTATION OF DIJKSTRA ALGORTIHM */
+vector<ll> dijkstra2(vector<vector<pair<ll, ll>>> &adj, ll n, ll src)
+{
+    priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> q;
+    vector<ll> dist(n, 0);
+    vector<ll> vis(n, 0);
+    q.push({0, src});
+    while (!q.empty())
+    {
+        ll v = q.top().second;
+        ll d = q.top().first;
+        q.pop();
+
+        if (vis[v] == 1)
+            continue;
+        vis[v]++;
+        dist[v] = d;
+        for (auto &to : adj[v])
+        {
+            ll child = to.first;
+            ll wt = to.second;
+            q.push({d + wt, child});
+        }
+    }
+    return dist;
+}
+
 /*BELLMAN-FORD ALGORITHM*/
 /*Time Complexity: O(nm)
 Input: Edges Vector, Number of vertices, Number of edges, Source Vertex
