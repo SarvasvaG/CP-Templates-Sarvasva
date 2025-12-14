@@ -53,33 +53,6 @@ struct BinaryTrie
     {
         TrieNode *curr = root;
         long long res = 0;
-        for (int b = BITS; b >= 0; b--)
-        {
-            if (!curr)
-                break;
-            int numBit = (x >> b) & 1;
-            int kBit = (K >> b) & 1;
-            if (kBit == 1)
-            {
-                if (curr->child[numBit])
-                {
-                    res += curr->child[numBit]->cnt;
-                }
-                curr = curr->child[numBit ^ 1];
-            }
-            else
-            {
-                curr = curr->child[numBit];
-            }
-        }
-        return res;
-    }
-
-    /*Returns Count of elements in the trie whose xor with x is <= K*/
-    long long countLessOrEqual(int x, int K)
-    {
-        TrieNode *curr = root;
-        long long res = 0;
         for (int i = BITS; i >= 0; i--)
         {
             if (!curr)
@@ -101,6 +74,12 @@ struct BinaryTrie
             }
         }
         return res;
+    }
+
+    /*Returns Count of elements in the trie whose xor with x is <= K*/
+    long long countLessOrEqual(int x, int K)
+    {
+        return countLess(x, K + 1);
     }
 
     /*Returns Count of elements in the trie whose xor with x is > K*/
