@@ -308,7 +308,7 @@ ll factPowP(ll n, ll k) {
 /*Time Complexity: O(clogn)=O(logn)*/
 ll factPow(ll n, ll k){
     ll res=INF;
-    map<ll,ll> pf=primeFactorization(n);
+    map<ll,ll> pf=primeFactorization(k);
     for(auto [prime, power] : pf){
         ll frequency=factPowP(n,prime);
         res=min(res,frequency/power);
