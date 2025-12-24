@@ -19,18 +19,21 @@ pair<ll, ll> sumAndCountOfDivisors(ll n)
             }
         }
     }
-    return make_pair(cnt,sum);
+    return make_pair(cnt, sum);
 }
 
 // For even better complexity use the Sum and Count formulae
 
 /*PRIME FACTORIZATION OF N*/
 /*TC=O(sqrt(n))*/
-map<ll,ll> primeFactorization(ll n)
+map<ll, ll> primeFactorization(ll n)
 {
-    map<ll,ll> pf;
-    for (ll i = 2; i * i <= n; i++) while (n % i == 0) pf[i]++,n /= i;
-    if (n > 1) pf[n]++;
+    map<ll, ll> pf;
+    for (ll i = 2; i * i <= n; i++)
+        while (n % i == 0)
+            pf[i]++, n /= i;
+    if (n > 1)
+        pf[n]++;
     return pf;
 }
 
@@ -39,13 +42,13 @@ map<ll,ll> primeFactorization(ll n)
 // Works well in CP for N upto 1e7
 vector<bool> is_prime;
 vector<ll> hp; // Highest Prime Divisor
-vector<ll> lp;// Lowest Prime Divisor
+vector<ll> lp; // Lowest Prime Divisor
 
 void primeNumbersUptoN(ll n)
 {
-    is_prime.assign(n+1,true);
-    hp.assign(n+1,0);
-    lp.assign(n+1,0);
+    is_prime.assign(n + 1, true);
+    hp.assign(n + 1, 0);
+    lp.assign(n + 1, 0);
     is_prime[0] = is_prime[1] = 0;
     for (ll i = 2; i <= n; i++)
     {
@@ -68,13 +71,15 @@ void primeNumbersUptoN(ll n)
 /*Can be used only when we have computed lowestPrime for every n*/
 /*This means this algorithm is applicable if for array elements are <=1e7 because we need to execute primeNumbersUptoN function before this*/
 /*Time Complexity: O(8*23)=O(1)*/
-map<ll,ll> primeFactorizationOpt(ll n)
+map<ll, ll> primeFactorizationOpt(ll n)
 {
-    map<ll,ll> mp;
-    while(n>1){
-        ll x=lp[n],c=0;
-        while(n%x==0) n/=x,c++;
-        mp[x]=c;
+    map<ll, ll> mp;
+    while (n > 1)
+    {
+        ll x = lp[n], c = 0;
+        while (n % x == 0)
+            n /= x, c++;
+        mp[x] = c;
     }
     return mp;
 }
@@ -85,7 +90,7 @@ const ll M = 1e5 + 10;
 vector<vector<ll>> divisors;
 void divisorsUptoN(ll n)
 {
-    divisors.assign(n+1,vector<ll>(0));
+    divisors.assign(n + 1, vector<ll>(0));
     for (ll i = 2; i <= n; i++)
     {
         for (ll j = 2 * i; j <= n; j += i)
@@ -149,10 +154,13 @@ void precompute()
 /*Input: Integer n
 Output: phi(n)*/
 /*Time Complexity: O(sqrt(n))*/
-ll phiFunction(ll n) {
+ll phiFunction(ll n)
+{
     ll result = n;
-    for (int i = 2; i * i <= n; i++) {
-        if (n % i == 0) {
+    for (int i = 2; i * i <= n; i++)
+    {
+        if (n % i == 0)
+        {
             while (n % i == 0)
                 n /= i;
             result -= result / i;
@@ -166,13 +174,16 @@ ll phiFunction(ll n) {
 /*COMPUTES EULER-TOTIENT FUNCTION FROM 1 TO N*/
 /*Time Complexity: O(nloglogn)*/
 vector<ll> phi;
-void phiUptoN(ll n) {
-    phi.assign(n+1,0);
+void phiUptoN(ll n)
+{
+    phi.assign(n + 1, 0);
     for (int i = 0; i <= n; i++)
         phi[i] = i;
 
-    for (int i = 2; i <= n; i++) {
-        if (phi[i] == i) {
+    for (int i = 2; i <= n; i++)
+    {
+        if (phi[i] == i)
+        {
             for (int j = i; j <= n; j += i)
                 phi[j] -= phi[j] / i;
         }
@@ -182,7 +193,8 @@ void phiUptoN(ll n) {
 /*COMPUTES EULER-TOTIENT FUNCTION FROM 1 TO N (USING DIVISOR SUM PROPERTY)
 phi(n)=n-summation(phi(d)) where d are proper divisors of n including 1*/
 /*Time complexity: O(nlogn)*/
-void phiUptoNv2(ll n) {
+void phiUptoNv2(ll n)
+{
     phi[0] = 0, phi[1] = 1;
     for (int i = 2; i <= n; i++)
         phi[i] = i - 1;
@@ -190,12 +202,13 @@ void phiUptoNv2(ll n) {
     /*Note: This trick is quite common and stnadard. Obtaining results of a number using it's divisors or multiples*/
     for (int i = 2; i <= n; i++)
         for (int j = 2 * i; j <= n; j += i)
-              phi[j] -= phi[i];
+            phi[j] -= phi[i];
 }
 
-
-ll gcd(ll a, ll b, ll& x, ll& y) {
-    if (b == 0) {
+ll gcd(ll a, ll b, ll &x, ll &y)
+{
+    if (b == 0)
+    {
         x = 1;
         y = 0;
         return a;
@@ -207,20 +220,25 @@ ll gcd(ll a, ll b, ll& x, ll& y) {
     return d;
 }
 
-bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g) {
+bool find_any_solution(ll a, ll b, ll c, ll &x0, ll &y0, ll &g)
+{
     g = gcd(abs(a), abs(b), x0, y0);
-    if (c % g) {
+    if (c % g)
+    {
         return false;
     }
 
     x0 *= c / g;
     y0 *= c / g;
-    if (a < 0) x0 = -x0;
-    if (b < 0) y0 = -y0;
+    if (a < 0)
+        x0 = -x0;
+    if (b < 0)
+        y0 = -y0;
     return true;
 }
 
-void shift_solution(ll & x, ll & y, ll a, ll b, ll cnt) {
+void shift_solution(ll &x, ll &y, ll a, ll b, ll cnt)
+{
     x += cnt * b;
     y -= cnt * a;
 }
@@ -228,7 +246,8 @@ void shift_solution(ll & x, ll & y, ll a, ll b, ll cnt) {
 /*FINDING NUMBER OF SOLUTIONS OF ax+by=c IN THE INTERVAL x belonging to [minx,maxx] and y belonging to [miny,maxy]*/
 /*If no solution exists, returns -1
 NOTE: Edge cases are not handled*/
-ll find_all_solutions(ll a, ll b, ll c, ll minx, ll maxx, ll miny, ll maxy) {
+ll find_all_solutions(ll a, ll b, ll c, ll minx, ll maxx, ll miny, ll maxy)
+{
     ll x, y, g;
     if (!find_any_solution(a, b, c, x, y, g))
         return 0;
@@ -273,31 +292,44 @@ ll find_all_solutions(ll a, ll b, ll c, ll minx, ll maxx, ll miny, ll maxy) {
 }
 
 /*Handles all the edge cases*/
-ll findAllSolutions(ll a, ll b, ll c, ll x1, ll x2, ll y1, ll y2){
-    ll ans=0;
-    if(a==0&&b==0){
-        if(c==0) ans=(x2-x1+1)*(y2-y1+1);
-        else ans=0;
+ll findAllSolutions(ll a, ll b, ll c, ll x1, ll x2, ll y1, ll y2)
+{
+    ll ans = 0;
+    if (a == 0 && b == 0)
+    {
+        if (c == 0)
+            ans = (x2 - x1 + 1) * (y2 - y1 + 1);
+        else
+            ans = 0;
     }
-    else if(a==0){
-        if(c%b==0&&c/b>=y1&&c/b<=y2) ans=(x2-x1+1);
-        else ans=0;
+    else if (a == 0)
+    {
+        if (c % b == 0 && c / b >= y1 && c / b <= y2)
+            ans = (x2 - x1 + 1);
+        else
+            ans = 0;
     }
-    else if(b==0){
-        if(c%a==0&&c/a>=x1&&c/a<=x2) ans=(y2-y1+1);
-        else ans=0;
+    else if (b == 0)
+    {
+        if (c % a == 0 && c / a >= x1 && c / a <= x2)
+            ans = (y2 - y1 + 1);
+        else
+            ans = 0;
     }
-    else{
-        ans=find_all_solutions(a,b,c,x1,x2,y1,y2);
+    else
+    {
+        ans = find_all_solutions(a, b, c, x1, x2, y1, y2);
     }
     return ans;
 }
 
 /*FIND POWER OF PRIME k IN n!*/
 /*Time Complexity: O(logn)*/
-ll factPowP(ll n, ll k) {
+ll factPowP(ll n, ll k)
+{
     ll res = 0;
-    while (n) {
+    while (n)
+    {
         n /= k;
         res += n;
     }
@@ -306,12 +338,14 @@ ll factPowP(ll n, ll k) {
 
 /*FIND POWER OF COMPOSITE k IN n!*/
 /*Time Complexity: O(clogn)=O(logn)*/
-ll factPow(ll n, ll k){
-    ll res=INF;
-    map<ll,ll> pf=primeFactorization(k);
-    for(auto [prime, power] : pf){
-        ll frequency=factPowP(n,prime);
-        res=min(res,frequency/power);
+ll factPow(ll n, ll k)
+{
+    ll res = INF;
+    map<ll, ll> pf = primeFactorization(k);
+    for (auto [prime, power] : pf)
+    {
+        ll frequency = factPowP(n, prime);
+        res = min(res, frequency / power);
     }
     return res;
 }
@@ -319,77 +353,153 @@ ll factPow(ll n, ll k){
 /*MOBIUS FUNCTION*/
 /*Time Complexity: O(nlogn)*/
 vector<ll> mobius;
-void mobiusFunction(ll n){
-    mobius.assign(n+1,0);
-    mobius[1]=-1;
-    for (int i=1;i<=n;i++) {
-        if(!mobius[i]) continue;
-		mobius[i]=-mobius[i];
-		for (int j=2*i;j<=n;j+=i)
-            mobius[j]+=mobius[i];
-	}
+void mobiusFunction(ll n)
+{
+    mobius.assign(n + 1, 0);
+    mobius[1] = -1;
+    for (int i = 1; i <= n; i++)
+    {
+        if (!mobius[i])
+            continue;
+        mobius[i] = -mobius[i];
+        for (int j = 2 * i; j <= n; j += i)
+            mobius[j] += mobius[i];
+    }
 }
 
 /*SOLVES CO-PRIME QUERY IN O(k*2^k) WHERE k=Number of primes (<=9 for n=10^9)*/
 /*Co-prime Query: Number of integers in the range [1,r] which are coprime with n*/
 /*The same logic can be used to solve the problem: Given an array of n integers determine how many integers in the range [1,r] are multiple of atleast one of the elements in the array*/
-ll solveCoprimeQuery(ll n, ll r) {
+ll solveCoprimeQuery(ll n, ll r)
+{
     vector<ll> p;
-    for (int i=2; i*i<=n; ++i)
-        if (n % i == 0) {
-            p.push_back (i);
+    for (int i = 2; i * i <= n; ++i)
+        if (n % i == 0)
+        {
+            p.push_back(i);
             while (n % i == 0)
                 n /= i;
         }
     if (n > 1)
-        p.push_back (n);
+        p.push_back(n);
 
     ll sum = 0;
-    for (int msk=1; msk<(1<<p.size()); ++msk) {
-        ll mult = 1,bits = 0;
-        for (int i=0; i<(int)p.size(); ++i)
-            if (msk & (1<<i)) {
+    for (int msk = 1; msk < (1 << p.size()); ++msk)
+    {
+        ll mult = 1, bits = 0;
+        for (int i = 0; i < (int)p.size(); ++i)
+            if (msk & (1 << i))
+            {
                 ++bits;
                 mult *= p[i];
             }
 
         ll cur = r / mult;
-        if (bits % 2 == 1) sum += cur;
-        else sum -= cur;
+        if (bits % 2 == 1)
+            sum += cur;
+        else
+            sum -= cur;
     }
     return r - sum;
 }
 
-
 /*MODULUS INVERSE WRT ANY MODULUS (NOT NECCESSARILY PRIME)*/
 /*Time Complexity: O(logm) or O(logm+sqrt(m)) (Depending on whether phi is precomputed or calculated per query)*/
-ll modInv(ll a, ll m){
-    auto binPow=[&](ll a, ll b, ll m){
+ll modInv(ll a, ll m)
+{
+    auto binPow = [&](ll a, ll b, ll m)
+    {
         ll ans = 1;
-        while (b){
-            if (b & 1) ans = (ans*1ll*a)%m;
-            a = (a*1ll*a)%m;
+        while (b)
+        {
+            if (b & 1)
+                ans = (ans * 1ll * a) % m;
+            a = (a * 1ll * a) % m;
             b >>= 1;
         }
         return ans;
     };
-    return binPow(a,phiFunction(m)-1,m);
+    return binPow(a, phiFunction(m) - 1, m);
 }
 
 /*CHINESE REMAINDER THEOREM*/
 /*Returns solution x mod M where M=product of mi assuming all the mi are coprime and also that M will not over flow out of ll*/
-struct Congruence {
+struct Congruence
+{
     ll a, m;
 };
 
-ll chineseRemainderTheorem(vector<Congruence> const& congruences) {
-    ll M = 1, solution=0;
-    for (auto const& congruence : congruences) M *= congruence.m;
-    for (auto const& congruence : congruences) {
-        ll a_i = congruence.a,M_i = M / congruence.m,N_i = modInv(M_i, congruence.m);
+ll chineseRemainderTheorem(vector<Congruence> const &congruences)
+{
+    ll M = 1, solution = 0;
+    for (auto const &congruence : congruences)
+        M *= congruence.m;
+    for (auto const &congruence : congruences)
+    {
+        ll a_i = congruence.a, M_i = M / congruence.m, N_i = modInv(M_i, congruence.m);
         solution = (solution + a_i * M_i % M * N_i) % M;
     }
     return solution;
+}
+
+/*CONVEX HULL COMPUTATION IN O(nlogn) USING GRAHMS' SCAN*/
+struct pt
+{
+    double x, y;
+    bool operator==(pt const &t) const
+    {
+        return x == t.x && y == t.y;
+    }
+};
+
+int orientation(pt a, pt b, pt c)
+{
+    double v = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);
+    if (v < 0)
+        return -1; // clockwise
+    if (v > 0)
+        return +1; // counter-clockwise
+    return 0;
+}
+
+bool cw(pt a, pt b, pt c, bool include_collinear)
+{
+    int o = orientation(a, b, c);
+    return o < 0 || (include_collinear && o == 0);
+}
+bool collinear(pt a, pt b, pt c) { return orientation(a, b, c) == 0; }
+
+void convex_hull(vector<pt> &a, bool include_collinear = false)
+{
+    pt p0 = *min_element(a.begin(), a.end(), [](pt a, pt b)
+                         { return make_pair(a.y, a.x) < make_pair(b.y, b.x); });
+    sort(a.begin(), a.end(), [&p0](const pt &a, const pt &b)
+         {
+        int o = orientation(p0, a, b);
+        if (o == 0)
+            return (p0.x-a.x)*(p0.x-a.x) + (p0.y-a.y)*(p0.y-a.y)
+                < (p0.x-b.x)*(p0.x-b.x) + (p0.y-b.y)*(p0.y-b.y);
+        return o < 0; });
+    if (include_collinear)
+    {
+        int i = (int)a.size() - 1;
+        while (i >= 0 && collinear(p0, a[i], a.back()))
+            i--;
+        reverse(a.begin() + i + 1, a.end());
+    }
+
+    vector<pt> st;
+    for (int i = 0; i < (int)a.size(); i++)
+    {
+        while (st.size() > 1 && !cw(st[st.size() - 2], st.back(), a[i], include_collinear))
+            st.pop_back();
+        st.push_back(a[i]);
+    }
+
+    if (include_collinear == false && st.size() == 2 && st[0] == st[1])
+        st.pop_back();
+
+    a = st;
 }
 
 int main()
